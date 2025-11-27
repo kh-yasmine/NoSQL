@@ -86,35 +86,34 @@ HSET utilisateur name "Yasmine" age 22
 HGETALL utilisateur
 ```
 
-------------------------------------------------------------------------
+### 5.5 Sets : SADD, SMEMBERS, SISMEMBER
 
-## 6. Persistance des données (Docker Compose conseillé)
+Les ensembles (Sets) permettent de stocker des valeurs **uniques**, sans doublons.
 
-Créez un fichier `docker-compose.yml` :
+Ajouter des éléments dans un Set :
 
-``` yaml
-services:
-  redis:
-    image: redis:latest
-    container_name: redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-
-volumes:
-  redis_data:
+```bash
+SADD couleurs "rouge"
+SADD couleurs "bleu"
+SADD couleurs "rouge"   # ignoré car déjà présent
 ```
 
-Lancez Redis :
+Afficher tout le set :
 
-``` bash
-docker compose up -d
+```bash
+SMEMBERS couleurs
+```
+
+Tester si un élément existe :
+
+```bash
+SISMEMBER couleurs "bleu"
+SISMEMBER couleurs "vert"
 ```
 
 ------------------------------------------------------------------------
 
-## 7. Gestion du conteneur
+## 6. Gestion du conteneur
 
 Arrêter Redis :
 
@@ -136,7 +135,7 @@ docker rm -f redis
 
 ------------------------------------------------------------------------
 
-## 8. Conclusion
+## 7. Conclusion
 
 Vous disposez maintenant d'une installation fonctionnelle de Redis via
 Docker et d'un ensemble de commandes essentielles pour manipuler des
