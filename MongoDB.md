@@ -3,8 +3,57 @@
 ## Introduction
 Ce rapport présente les réponses aux différentes questions du TP *Prise en main de MongoDB* ainsi que l’explication du rôle et du fonctionnement des requêtes associées.  
 Les exemples de requêtes proviennent du sujet fourni.  
+Dans un premier temps, voici un tableau récapitulatif des fonctions et opérations utilisées dans ce tp avec leur role et l'equivalent SQL (quand c'est possible)
+---
+# Tableau récapitulatif des fonctions MongoDB et équivalents SQL
+
+## 🔎 Fonctions principales (find, update, delete…)
+
+| Fonction / Opérateur MongoDB | Rôle / Utilité | Exemple MongoDB | Équivalent SQL |
+|------------------------------|----------------|------------------|----------------|
+| `db.collection.find()` | Récupère des documents selon un filtre | `db.movies.find({year: 2010})` | `SELECT * FROM movies WHERE year = 2010;` |
+| `db.collection.findOne()` | Renvoie un seul document | `db.movies.findOne()` | `SELECT * FROM movies LIMIT 1;` |
+| **Projection** `{champ:1}` | Affiche seulement certains champs | `db.movies.find({}, {title:1})` | `SELECT title FROM movies;` |
+| **Projection** `{champ:0}` | Masque certains champs | `db.movies.find({}, {poster:0})` | Impossible directement (faire `SELECT` sans la colonne) |
+| `$gt, $lt, $gte, $lte` | Comparaisons > < ≥ ≤ | `{year: {$gt:2000}}` | `WHERE year > 2000` |
+| `$eq, $ne` | égal / différent | `{genre: {$eq:"Action"}}` | `=`, `!=` |
+| `$in`, `$nin` | Valide si valeur dans une liste | `{genre: {$in:["Action","Drama"]}}` | `IN (...)` |
+| `$exists` | Teste si un champ existe | `{rated: {$exists:false}}` | `IS NULL` / `IS NOT NULL` (partiel) |
+| `$regex` | Recherche par motif | `{title:/^Star/}` | `LIKE 'Star%'` |
+| `$where` | Test logique JS (lent) | `{ $where:'this.genres.length>2' }` | Aucun équivalent simple |
+| `db.collection.countDocuments()` | Compte les documents | `db.movies.countDocuments({year:2000})` | `SELECT COUNT(*)` |
+| `db.collection.distinct()` | Liste les valeurs uniques | `db.movies.distinct("genre")` | `SELECT DISTINCT genre` |
+| `db.collection.updateOne()` | Met à jour un document | `{$set:{etat:"culte"}}` | `UPDATE movies SET etat='culte'` |
+| `db.collection.updateMany()` | Met à jour plusieurs docs | — | `UPDATE ... WHERE ...` |
+| `$set` | Ajoute / modifie un champ | `{$set:{etat:"culte"}}` | `SET etat='culte'` |
+| `$unset` | Supprime un champ | `{$unset:{poster:""}}` | `ALTER TABLE DROP COLUMN` (approx.) |
+| `$inc` | Incrémente une valeur | `{$inc:{votes:100}}` | `SET votes = votes + 100` |
+| `db.collection.deleteOne()` | Supprime un doc | — | `DELETE FROM ... LIMIT 1` |
+| `db.collection.deleteMany()` | Supprime plusieurs docs | — | `DELETE FROM ...` |
+| `db.collection.createIndex()` | Crée un index | `{year:1}` | `CREATE INDEX ...` |
+| `db.collection.getIndexes()` | Liste les index | — | `SHOW INDEXES` |
+| `db.collection.dropIndex()` | Supprime un index | — | `DROP INDEX ...` |
 
 ---
+
+## 🧱 Opérateurs d’agrégation (aggregate)
+
+| Stage / Opérateur | Rôle | Exemple MongoDB | Équivalent SQL |
+|-------------------|------|------------------|----------------|
+| `aggregate()` | Chaîne d’opérations complexes | `db.movies.aggregate([...])` | Séries de requêtes SQL |
+| `$match` | Filtrer (comme WHERE) | `{ $match:{year:{$gte:2000}}}` | `WHERE year >= 2000` |
+| `$group` | Regrouper + calculer | `{ $group:{_id:"$year", total:{$sum:1}}}` | `GROUP BY year` |
+| `$sum` | Somme / comptage | `{$sum:1}` | `COUNT(*)` ou `SUM()` |
+| `$avg` | Moyenne | `{$avg:"$rating"}` | `AVG(rating)` |
+| `$max` / `$min` | Maximum / minimum | `{$max:"$rating"}` | `MAX(rating)` |
+| `$sort` | Trier | `{ $sort:{rating:-1}}` | `ORDER BY rating DESC` |
+| `$project` | Sélectionner / transformer champs | `{ $project:{title:1, year:1} }` | `SELECT title, year` |
+| `$unwind` | Déplier un tableau → 1 doc par élément | `{ $unwind:"$genres"}` | Aucun équivalent direct (JOIN complexe) |
+| `$limit` | Limiter le nombre de résultats | `{ $limit:5 }` | `LIMIT 5` |
+| `$count` | Compter dans un pipeline | `{ $count:"nb"}` | `COUNT(*)` |
+
+---
+
 
 ## Partie 1 – Filtrer et projeter les données
 
@@ -112,7 +161,9 @@ db.movies.aggregate([
 ])
 ```
 **Explication :**  
-- Compte les occurrences de chaque réalisateur.  
+- Compte les occurrences de chaque réalisateur.
+- Trie les occurences
+- et affiche les 5 premiers.
 
 ---
 
@@ -166,7 +217,7 @@ db.movies.updateOne({ title: "Titanic" }, { $set: { directors: ["James Cameron"]
 
 ### 15. Meilleurs films par décennie
 ```js
-db.movies.aggregate([
+  db.movies.aggregate([
   { $match: { "imdb.rating": { $exists: true }}},
   { $project: { title: 1, decade: { $subtract: ["$year", { $mod: ["$year", 10 ]} ]}, "imdb.rating": 1 }},
   { $group: { _id: "$decade", maxRating: { $max: "$imdb.rating" }}},
