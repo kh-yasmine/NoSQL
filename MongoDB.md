@@ -1,13 +1,16 @@
-# Rapport TP MongoDB
+# Rapport TP1 MongoDB
 
 ## Introduction
-Ce rapport présente les réponses aux différentes questions du TP *Prise en main de MongoDB* ainsi que l’explication du rôle et du fonctionnement des requêtes associées.  
+
+Ce rapport présente les réponses aux différentes questions du TP Prise en main de MongoDB ainsi que l’explication du rôle et du fonctionnement des requêtes associées.  
 Les exemples de requêtes proviennent du sujet fourni.  
-Dans un premier temps, voici un tableau récapitulatif des fonctions et opérations utilisées dans ce tp avec leur role et l'equivalent SQL (quand c'est possible)
+Dans un premier temps, voici un tableau récapitulatif des fonctions et opérations utilisées dans ce TP avec leur rôle et l’équivalent SQL (quand c’est possible).
+
 ---
+
 # Tableau récapitulatif des fonctions MongoDB et équivalents SQL
 
-## 🔎 Fonctions principales (find, update, delete…)
+## Fonctions principales (find, update, delete…)
 
 | Fonction / Opérateur MongoDB | Rôle / Utilité | Exemple MongoDB | Équivalent SQL |
 |------------------------------|----------------|------------------|----------------|
@@ -36,7 +39,7 @@ Dans un premier temps, voici un tableau récapitulatif des fonctions et opérati
 
 ---
 
-## 🧱 Opérateurs d’agrégation (aggregate)
+## Opérateurs d’agrégation (aggregate)
 
 | Stage / Opérateur | Rôle | Exemple MongoDB | Équivalent SQL |
 |-------------------|------|------------------|----------------|
@@ -302,3 +305,7 @@ db.movies.createIndex({ year: 1, "imdb.rating": -1 })
 
 ## Conclusion
 Ce rapport détaille les requêtes MongoDB utilisées et leur objectif pédagogique pour comprendre les filtres, agrégations, mises à jour et index dans MongoDB.
+
+
+
+
