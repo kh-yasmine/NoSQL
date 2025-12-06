@@ -226,9 +226,6 @@ rs.stepDown()
 ---
 
 #  Partie 3 — Résilience & tolérance aux pannes
-
-*(Réponses 13 à 22)*
-
 ---
 
 ## **13. Désigner un Arbiter**
@@ -307,8 +304,6 @@ Pour faciliter l’obtention d’une majorité.
 ---
 
 #  Partie 4 — Scénarios pratiques
-
-*(Réponses 23 à 32)*
 
 ---
 
@@ -403,9 +398,6 @@ rs.printSlaveReplicationInfo()
 ---
 
 #  Partie 5 — Questions complémentaires
-
-*(Réponses 33 à 46)*
-
 ---
 
 ## **33. Que fait `rs.freeze()` ?**
